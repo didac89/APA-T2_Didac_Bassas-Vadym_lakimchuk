@@ -1,84 +1,134 @@
-# Segunda tarea de APA 2023: Manejo de números primos
+## Foto
+![Resultado](foto.jpg)
 
-## Nom i cognoms
+## Código
 
-## Fichero `primos.py`
 
-- El alumno debe escribir el fichero `primos.py` que incorporará distintas funciones relacionadas con el manejo
-  de los números primos.
+```python
+import numpy as np
 
-- El fichero debe incluir una cadena de documentación que incluirá el nombre del alumno y los tests unitarios
-  de las funciones incluidas.
+def esPrimo(a):
+    if(a == 0):
+        return False
+    for i in range(int(np.sqrt(a))):
+        if(a%(i+1) == 0  and i+1 != 1 and i+1 != a ):
+            return False
+    return True 
 
-- Cada función deberá incluir su propia cadena de documentación que indicará el cometido de la función, los
-  argumentos de la misma y la salida proporcionada.
+print ([ numero for numero in range(2, 50) if esPrimo(numero) ])
 
-- Se valorará lo pythónico de la solución; en concreto, su claridad y sencillez, y el uso de los estándares marcados
-  por PEP-8. También se valorará su eficiencia computacional.
 
-### Determinación de la *primalidad* y descomposición de un número en factores primos
+# b = esPrimo()
+# if (b):
+#     print("es peimo")
+# else:
+#     print("no")
 
-Incluya en el fichero `primos.py` las tres funciones siguientes:
+def primos(a):
+    tupla = []
+    for i in range(a+1):
+        if (esPrimo(i)):
+            tupla.append(i)
+    return tupla
+    
 
-- `esPrimo(numero)`   Devuelve `True` si su argumento es primo, y `False` si no lo es.
-- `primos(numero)`    Devuelve una **tupla** con todos los números primos menores que su argumento.
-- `descompon(numero)` Devuelve una **tupla** con la descomposición en factores primos de su argumento.
+a = primos(50)
+print(a)
 
-### Obtención del mínimo común múltiplo y el máximo común divisor
+def descompon(a):
+    primos_posibles = primos(a)
+    primos_reales = [1]
+    i = 0
+    if(esPrimo(a)):
+        primos_reales.append(a)
+    while( primos_posibles[i]!= primos_posibles[-1] ):   
+        if(a % primos_posibles[i+1] == 0):
+            a = a/primos_posibles[i+1]
+            primos_reales.append(primos_posibles[i+1])
+        else:
+            i = i+1
 
-Usando las tres funciones del apartado anterior (y cualquier otra que considere conveniente añadir), escriba otras
-dos que calculen el máximo común divisor y el mínimo común múltiplo de sus argumentos:
+    return primos_reales
 
-- `mcm(numero1, numero2)`:  Devuelve el mínimo común múltiplo de sus argumentos.
-- `mcd(numero1, numero2)`:  Devuelve el máximo común divisor de sus argumentos.
+c = descompon(36*175*143)  
+print(c)
 
-Estas dos funciones deben cumplir las condiciones siguientes:
+def mnm(numero1,numero2):
+    minimo = 1
+    primos_num1 = descompon(numero1)
+    primos_num2 = descompon(numero2) 
+    min = primos_num1 + primos_num2
+    for i in range(len(min)):
+        count1 = 0
+        count2 = 0
+        for k in range(len(primos_num1)):
+            if(min[i] == primos_num1[k]):
+                count1 = count1 + 1
+                primos_num1[k] = 0
+        for a in range(len(primos_num2)):
+            if(min[i] == primos_num2[a]):
+                count2 = count2 + 1
+                primos_num2[a] = 0
+        if(max(count1,count2) != 0):
+            minimo = minimo * max(count1,count2) * min[i]
+    return minimo
 
-- Aunque se trate de una solución sub-óptima, en ambos casos deberá partirse de la descomposición en factores
-  primos de los argumentos usando las funciones del apartado anterior.
+#k = descompon(13)  
+#print(k)
+#z = descompon(15) 
+#print(z)
+a = mnm(90, 14)
+print(a)
 
-- Aunque también sea sub-óptimo desde el punto de vista de la programación, ninguna de las dos funciones puede
-  depender de la otra; cada una debe programarse por separado.
+    
+def mdc(numero1,numero2):
+    tupla = []
+    primos_num1 = descompon(numero1)
+    primos_num2 = descompon(numero2) 
+    for i in range(len(primos_num1)):
+        for a in range(len(primos_num2)):
+            if (primos_num1[i] == primos_num2[a]):
+                primos_num2[a] = 0
+                tupla.append(primos_num1[i])
+    return max(tupla)
 
-### Obtención del mínimo común múltiplo y el máximo común divisor para un número arbitrario de argumentos
+ 
+#print(z)
+a = mdc(924, 780)
+print(a)
 
-Escriba las funciones `mcmN()` y `mcdN()`, que calculan el mínimo común múltiplo y el máximo común divisor para un
-número arbitrario de argumentos:
 
-- `mcm(*numeros)`:  Devuelve el mínimo común múltiplo de sus argumentos.
-- `mcd(*numeros)`:  Devuelve el máximo común divisor de sus argumentos.
 
-### Tests unitarios
 
-La cadena de documentación del fichero debe incluir los tests unitarios de las cinco funciones. En concreto, deberán
-comprobarse las siguientes condiciones:
+def mcmN(*numeros):
+    maxim = max(numeros)
+#    for numero in numeros:
+#        if (i % numero != 0): break
+#    else:
+#        return i
+    
+    mult=1
+    for numero in numeros:
+        mult = mult*numero
+    
+    for j in range(maxim,mult+1):
+        for numero in numeros:
+            if (j%numero != 0):
+                break
+        else: break
+        j += 1        
+    return j
 
-- `esPrimo(numero)`:  Al ejecutar `[ numero for numero in range(2, 50) if esPrimo(numero) ]`, la salida debe ser
-                      `[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]`.
-- `primos(numeor)`: Al ejecutar `primos(50)`, la salida debe ser `(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47)`.
-- `descompon(numero)`: Al ejecutar `descompon(36 * 175 * 143)`, la salida debe ser `(2, 2, 3, 3, 5, 5, 7, 11, 13)`.
-- `mcm(num1, num2)`: Al ejecutar `mcm(90, 14)`, la salida debe ser `630`.
-- `mcd(num1, num2)`: Al ejecutar `mcd(924, 780)`, la salida debe ser `12`.
-- `mcmN(numeros)`: Al ejecutar `mcm(42, 60, 70, 63)`, la salida debe ser `1260`.
-- `mcdN(numeros)`: Al ejecutar `mcd(840, 630, 1050, 1470)`, la salida debe ser `210`.
+x = mcmN(42, 60, 70, 63)
+print(x) 
 
-### Entrega
 
-#### Ejecución de los tests unitarios
+def mcdN(*numeros):
+    divisor = max(numeros)
+    for numero in numeros:
+        divisor = mdc(divisor, numero)
+    return divisor
 
-Inserte a continuación una captura de pantalla que muestre el resultado de ejecutar el fichero `primos.py` con la opción
-*verbosa*, de manera que se muestre el resultado de la ejecución de los tests unitarios.
-
-#### Código desarrollado
-
-Inserte a continuación el contenido del fichero `primos.py` usando los comandos necesarios para que se realice el
-realce sintáctico en Python del mismo.
-
-#### Subida del resultado al repositorio GitHub ¿y *pull-request*?
-
-El fichero `primos.py`, la imagen con la ejecución de los tests unitarios y este mismo fichero, `README.md`, deberán
-subirse al repositorio GitHub mediante la orden `git push`. Si los profesores de la asignatura consiguen montar el
-sistema a tiempo, la entrega se formalizará realizando un *pull-request* al propietario del repositorio original.
-
-El fichero `README.md` deberá respetar las reglas de los ficheros Markdown y visualizarse correctamente en el repositorio,
-incluyendo la imagen con la ejecución de los tests unitarios y el realce sintáctico del código fuente insertado.
+x = mcdN(840, 630, 1050, 1470)
+print(x)
+```
